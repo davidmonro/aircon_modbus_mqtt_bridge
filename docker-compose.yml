@@ -1,0 +1,41 @@
+version: '3.7'
+
+networks:
+  serverland:
+    external:
+      name: serverland
+
+services:
+
+  aircon_modbus_mqtt_bridge:
+    image: aircon_modbus_mqtt_bridge
+    restart: unless-stopped
+    build:
+      context: ./mqtt-scripts
+      target: aircon_modbus_mqtt_bridge
+      network: serverland
+    logging:
+      driver: syslog
+      options:
+        syslog-address: "udp://syslogserver-goes-here:514"
+        tag: aircon_modbus_mqtt_bridge_1
+    networks:
+      serverland:
+    environment:
+      MQTT_HOST: mqtt-sec.davidmonro.net
+      MQTT_PORT: 8883
+      MQTT_CLIENTID: daikin1
+      MQTT_STATE_TOPIC_BASE: hvac/state/daikin1
+      MQTT_CONTROL_TOPIC_BASE: hvac/control/daikin1
+      MQTT_USERNAME: daikinbridge
+      MQTT_PASSWORD: password-goes-here
+      MQTT_TLS: "True"
+      MQTT_TLS_INSECURE: 'True'
+      MODBUS_HOST: 192.168.0.104
+      MODBUS_PORT: 502
+      MODBUS_UNIT: 1
+
+
+
+# vim: set expandtab shiftwidth=2:
+
